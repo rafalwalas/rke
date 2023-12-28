@@ -1,0 +1,11 @@
+---
+- name: Install bind9 and dnsutils
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - bind9
+      - dnsutils
+    state: latest
+    update_cache: true
+  retries: 3
+  delay: 5

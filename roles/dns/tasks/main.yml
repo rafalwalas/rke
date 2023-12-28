@@ -1,0 +1,10 @@
+---
+- name: Prepare dns variables
+  ansible.builtin.set_fact:
+    dns: "{{ default_dns | combine(dns) }}"
+
+- name: Execute install
+  ansible.builtin.include_tasks: install.yml
+
+- name: Execute config
+  ansible.builtin.include_tasks: config.yml

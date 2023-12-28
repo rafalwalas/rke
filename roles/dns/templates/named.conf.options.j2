@@ -1,0 +1,55 @@
+options {
+        directory "/var/cache/bind";
+        dnssec-validation no;
+        allow-query { any; };
+        allow-query-cache { any; };
+        allow-recursion { any; };
+        forwarders {
+        {% for ns in dns.additional_dns_servers %}
+            {{ ns }};
+        {% endfor %}
+        };
+
+};
+logging {
+        channel transfers {
+            file "/var/log/named/transfers" versions 3 size 10M;
+            print-time yes;
+            severity info;
+        };
+        channel notify {
+            file "/var/log/named/notify" versions 3 size 10M;
+            print-time yes;
+            severity info;
+        };
+        channel dnssec {
+            file "/var/log/named/dnssec" versions 3 size 10M;
+            print-time yes;
+            severity info;
+        };
+        channel query {
+            file "/var/log/named/query" versions 5 size 10M;
+            print-time yes;
+            severity info;
+        };
+        channel general {
+            file "/var/log/named/general" versions 3 size 10M;
+        print-time yes;
+        severity info;
+        };
+    channel slog {
+        syslog security;
+        severity info;
+    };
+        category xfer-out { transfers; slog; };
+        category xfer-in { transfers; slog; };
+        category notify { notify; };
+
+        category lame-servers { general; };
+        category config { general; };
+        category default { general; };
+        category security { general; slog; };
+        category dnssec { dnssec; };
+
+        // category queries { query; };
+};

@@ -1,0 +1,17 @@
+
+---
+- hosts: "{{ ansible_limit | default('dns_servers') }}"
+  gather_facts: true
+  become: false
+  pre_tasks:
+    - name: Include Ansible vault file
+      become: false
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/../vault.yml"
+      delegate_to: localhost
+      tags: always
+      no_log: true
+
+  roles:
+    - { role: update_cache, tags: ['update_cache'] }
+    - { role: dns, tags: ['dns'] }

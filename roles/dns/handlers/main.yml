@@ -1,0 +1,7 @@
+# code: language=ansible
+---
+- name: Reload BIND9
+  become: true
+  ansible.builtin.service:
+    name: bind9
+    state: reloaded

@@ -1,0 +1,92 @@
+---
+- name: Gather subnet for "{{ ansible_host }}"
+  ansible.builtin.set_fact:
+    host_subnet: "{{ ansible_host.split('.')[0:3] | join('.') }}"
+
+- name: Gathering subnets
+  block:
+    - name: Gather subnets
+      ansible.builtin.set_fact:
+        ip_all_subnets: "{{ ip_all_subnets | default([]) + [host.ansible_host.split('.')[0:3] | join('.')] }}"
+      loop: "{{ dns.hosts }}"
+      loop_control:
+        loop_var: host
+      when: "'.' in host.ansible_host"
+
+    - name: Gather unique subnets
+      ansible.builtin.set_fact:
+        ip_subnets: "{{ ip_all_subnets | unique }}"
+
+- name: Generate timestamp-based serial number
+  ansible.builtin.set_fact:
+    serial_number: "{{ ansible_date_time.date | regex_replace('-', '') | regex_replace('^20', '') }}{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}"
+  run_once: true
+
+- name: Reverse IP subnets
+  ansible.builtin.set_fact:
+    reversed_ip: "{{ reversed_ip | default([]) + [net.split('.') | reverse | join('.')] }}"
+  loop: "{{ ip_subnets }}"
+  loop_control:
+    loop_var: net
+
+- name: Create log directory for bind
+  become: true
+  ansible.builtin.file:
+    path: /var/log/named
+    mode: 0770
+    owner: bind
+    group: bind
+    state: directory
+
+- name: Add named.conf.local
+  become: true
+  ansible.builtin.template:
+    src: named.conf.j2
+    dest: /etc/bind/named.conf.local
+    mode: 0644
+    owner: root
+    group: bind
+  notify: "Reload BIND9"
+
+- name: Add /etc/default/named
+  become: true
+  ansible.builtin.copy:
+    src: named
+    dest: /etc/default/named
+    mode: 0644
+    owner: root
+    group: bind
+  notify: "Reload BIND9"
+
+- name: Add named.conf.options
+  become: true
+  ansible.builtin.template:
+    src: named.conf.options.j2
+    dest: /etc/bind/named.conf.options
+    mode: 0644
+    owner: root
+    group: bind
+  notify: "Reload BIND9"
+
+- name: Add db.zone_name
+  become: true
+  ansible.builtin.template:
+    src: db.j2
+    dest: /etc/bind/db.{{ dns.zone_name }}
+    mode: 0644
+    owner: root
+    group: root
+  notify: "Reload BIND9"
+
+- name: Add reverse db.zone_name
+  become: true
+  ansible.builtin.template:
+    src: db.reverse.j2
+    dest: "/etc/bind/db.{{ rev_address }}"
+    mode: 0644
+    owner: root
+    group: root
+  loop: "{{ reversed_ip }}"
+  loop_control:
+    loop_var: rev_address
+  notify: "Reload BIND9"

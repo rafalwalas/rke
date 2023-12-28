@@ -1,0 +1,21 @@
+;
+; BIND reverse data file for {{ dns.zone_name }}
+;
+$TTL	604800
+@	IN	SOA	{{ ansible_hostname }}.{{ dns.zone_name }}. root.localhost. (
+{{ serial_number }}		; Serial
+			 604800		; Refresh
+			  86400		; Retry
+			2419200		; Expire
+			 604800 )	; Negative Cache TTL
+;
+;
+; host records
+@	IN	NS	{{ ansible_hostname }}.{{ dns.zone_name }}.
+{% set added_last_octets = [] %}
+{% for host in dns.hosts %}
+{% if "*" not in host.name and rev_address.split('.')[0] == host.third_octet and host.last_octet not in added_last_octets %}
+{{ host.last_octet }}    IN    PTR {{ host.name }}.{{ dns.zone_name }}.
+{% set _ = added_last_octets.append(host.last_octet) %}
+{% endif %}
+{% endfor %}

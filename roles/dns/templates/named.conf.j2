@@ -1,0 +1,10 @@
+zone "{{ dns.zone_name }}" {
+    type master;
+    file "/etc/bind/db.{{ dns.zone_name }}";
+};
+{% for rev_subnet in reversed_ip %}
+zone "{{ rev_subnet }}.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.{{ rev_subnet }}";
+};
+{% endfor %}

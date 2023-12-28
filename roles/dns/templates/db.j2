@@ -1,0 +1,21 @@
+;
+; BIND data file for {{ dns.zone_name }}
+;
+$TTL	604800
+@	IN	SOA	{{ ansible_hostname }}.{{ dns.zone_name }}. root.localhost. (
+{{ serial_number }}		; Serial
+			 604800		; Refresh
+			  86400		; Retry
+			2419200		; Expire
+			 604800 )	; Negative Cache TTL
+;
+@	IN	NS	{{ ansible_hostname }}.{{ dns.zone_name }}.
+
+; host records
+{% for host in dns.hosts %}
+{% for ip_subnet in ip_subnets %}
+{% if ip_subnet.split('.')[2] == host.third_octet and ip_subnet in host.ansible_host %}
+{{ host.name }}	IN	A	{{ host.ansible_host }}
+{% endif %}
+{% endfor %}
+{% endfor %}

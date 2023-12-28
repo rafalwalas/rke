@@ -1,0 +1,29 @@
+default_dns:
+# Provide the FQDN of the zone you want to create records for e.g. "intra.pixel.com.pl"
+  zone_name: ""
+
+# Add hostname of the NS
+  name_server: ""
+
+# Hosts list with A record adding
+# Schema of list:
+# hosts:
+#   - ansible_host:
+#     name:
+#     third_octet:
+#     last_octet:
+# Example:
+# hosts:
+#   - ansible_host: 1.2.3.4
+#     name: worker1
+#     third_octet: 3
+#     last_octet: 4
+#   - ansible_host: 5.6.7.8
+#     name: worker2
+#     third_octet: 7
+#     last_octet: 8
+# All values of this elements must be a string!
+  hosts: []
+
+# Define additional DNS server to use them for i.e. in forwarders
+  additional_dns_servers: []
