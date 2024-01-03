@@ -1,0 +1,8 @@
+ceph:
+  userID: ""
+  userKey: ""
+  clusterID: ""
+  monitors: []
+  pool: ""
+  
+isDefault: false

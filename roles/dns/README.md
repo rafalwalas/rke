@@ -1,10 +1,11 @@
-# DNS installation and configuration
+# DNS Installation and Configuration
 
 ## About
 
 Purpose of this role is to install and provide configuration for Bind9 DNS server.
 
-Documentation describing structure and usage of this role can be found here: [Confluence](https://pixeltechnology.atlassian.net/wiki/spaces/TI/pages/267616404/DNS+role+documentation)
+Documentation describing structure and usage of this role can be found here:
+[Confluence](https://pixeltechnology.atlassian.net/wiki/spaces/TI/pages/267616404/DNS+role+documentation)
 
 ## Dependencies
 
@@ -49,3 +50,4 @@ To get all information about variables please browse `defaults/main.yml`.
 
 [Pawel Siuda-Witkowski](p.siuda@pixel.com.pl)
 [Andrzej Szczepaniak](a.szczepaniak@pixel.com.pl)
+[Rafał Walas](r.walas@pixel.com.pl)
